@@ -1,0 +1,83 @@
+
+<!--
+Author: Huang Jun, You Yihong
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        body{
+            background:#f8f9fa;
+            font-family:'Segoe UI',sans-serif;
+        }
+        .simple-card{
+            background:#fff;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            box-shadow:0 10px 24px rgba(15,23,42,0.1);
+            padding:24px;
+            height:100%;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+        }
+        .page-hero{
+            background:#fff;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            box-shadow:0 12px 28px rgba(15,23,42,0.12);
+            padding:32px;
+            margin-bottom:32px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="page-hero">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
+            <div>
+                <h2 class="fw-semibold mb-2">Welcome back, Admin!</h2>
+                <p class="text-muted mb-0">Use the quick links below to manage products, customers, and orders.</p>
+            </div>
+            <a href="/logout" class="btn btn-outline-danger">
+                <i class="bi bi-box-arrow-right"></i> Log out
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="simple-card">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-boxes me-2"></i>Catalog</h4>
+                <p class="text-muted">Add new products, adjust pricing, or tidy up descriptions.</p>
+                <a href="/products/admin/maintain" class="btn btn-primary mt-auto">Manage Products</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="simple-card">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-person-badge me-2"></i>Customers</h4>
+                <p class="text-muted">See customer details, carts, and their order history.</p>
+                <a href="/admin/customers" class="btn btn-success mt-auto">View Customers</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="simple-card">
+                <h4 class="fw-semibold mb-3"><i class="bi bi-receipt me-2"></i>Orders</h4>
+                <p class="text-muted">Check payment method, totals, and individual items.</p>
+                <a href="/admin/orders" class="btn btn-info text-white mt-auto">View Orders</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

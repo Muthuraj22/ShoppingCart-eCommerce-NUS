@@ -1,0 +1,124 @@
+
+<!--
+Author: Huang Jun, You Yihong
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin · Order Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        body{
+            background:#f8f9fa;
+            font-family:'Segoe UI',sans-serif;
+        }
+        .info-box{
+            background:#fff;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            box-shadow:0 10px 24px rgba(15,23,42,0.1);
+            padding:24px;
+            margin-bottom:24px;
+        }
+        .section-title{
+            color:#333;
+            font-weight:600;
+        }
+        .table th{
+            background:#f1f1f1;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h2 class="mb-1 section-title" th:text="'Order #' + ${orderDetail.orderId}">Order Detail</h2>
+            <p class="text-muted mb-0" th:text="'Placed on ' + ${orderDetail.orderDate}">Placed on</p>
+        </div>
+        <a href="#" class="btn btn-outline-secondary" onclick="history.back(); return false;">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="info-box">
+        <h4 class="mb-3 section-title">Summary</h4>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Order Date</dt>
+                    <dd class="col-sm-7" th:text="${orderDetail.orderDate}">2025-01-01</dd>
+
+                    <dt class="col-sm-5">Payment Method</dt>
+                    <dd class="col-sm-7" th:text="${orderDetail.paymentMethod != null ? orderDetail.paymentMethod : 'N/A'}">Payment</dd>
+
+                    <dt class="col-sm-5">Items</dt>
+                    <dd class="col-sm-7" th:text="${orderDetail.itemCount}">0</dd>
+
+                    <dt class="col-sm-5">Total Amount</dt>
+                    <dd class="col-sm-7" th:text="'$ '+ ${#numbers.formatDecimal(orderDetail.totalAmount, 1, 2)}">0</dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Customer</dt>
+                    <dd class="col-sm-7" th:text="${customerSummary.name}">Customer Name</dd>
+
+                    <dt class="col-sm-5">Email</dt>
+                    <dd class="col-sm-7" th:text="${customerSummary.emailAddress}">Email</dd>
+
+                    <dt class="col-sm-5">Phone</dt>
+                    <dd class="col-sm-7" th:text="${customerSummary.phoneNumber}">Phone</dd>
+
+                    <dt class="col-sm-5">Address</dt>
+                    <dd class="col-sm-7" th:text="${customerSummary.address}">Address</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0 section-title">Items</h4>
+            <span class="badge text-bg-secondary" th:text="'Total Items · ' + ${orderDetail.itemCount}">
+                Total Items · 0
+            </span>
+        </div>
+
+        <div th:if="${orderDetail.items == null or #lists.isEmpty(orderDetail.items)}"
+             class="alert alert-light border mb-0">
+            No items found for this order.
+        </div>
+
+        <div th:if="${orderDetail.items != null and !#lists.isEmpty(orderDetail.items)}" class="table-responsive">
+            <table class="table table-bordered align-middle text-center mb-0">
+                <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Line Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${orderDetail.items}">
+                    <td th:text="${item.purchaseName}">Product</td>
+					<td th:text="'$ '+ ${#numbers.formatDecimal(item.purchaseUnitPrice, 1, 2)}">0</td>
+                    <td th:text="${item.quantity}">0</td>
+					<td th:text="'$ '+ ${#numbers.formatDecimal(item.lineTotal, 1, 2)}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

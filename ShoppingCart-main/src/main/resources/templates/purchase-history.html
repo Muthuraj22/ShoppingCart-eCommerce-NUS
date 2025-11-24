@@ -1,0 +1,103 @@
+
+<!--
+Author: Muthu Raj
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-top: 2rem;
+            color: #333;
+        }
+        .table-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 2rem auto;
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+        .product-img {
+            width: 80px;
+            height: auto;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<h2>Purchase History</h2>
+<div class="text-center mt-3">
+    <a href="/products" class="btn btn-outline-primary">
+        <i class="bi bi-bag"></i> Continue Shopping
+    </a>
+</div>
+<h3 th:if="${#lists.isEmpty(orders)}" class="mt-4">You have not placed any orders yet.</h3>
+<div class="table-container" th:if="${orders != null and !#lists.isEmpty(orders)}">
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-light">
+            <tr>
+                <th>Order #</th>
+                <th>Date</th>
+                <th>Total Price</th>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Image</th>
+            </tr>
+            </thead>
+            <tbody th:each="order : ${orders}">
+            <tr th:if="${order.orderItems != null and !#lists.isEmpty(order.orderItems)}">
+                <td th:rowspan="${#lists.size(order.orderItems)}" th:text="'#' + ${order.id}"></td>
+                <td th:rowspan="${#lists.size(order.orderItems)}" th:text="${order.orderDate}"></td>
+                <td th:rowspan="${#lists.size(order.orderItems)}"
+                    th:text="'$ ' + ${#numbers.formatDecimal(order.totalPrice, 1, 2)}"></td>
+                <td>
+                    <a th:href="@{/orders/{orderId}/order-item/{productId}(orderId=${order.id}, productId=${order.orderItems[0].product.id})}"
+                       th:text="${order.orderItems[0].purchaseName} + ' (x' + ${order.orderItems[0].quantity} + ')'"
+                       class="text-decoration-none text-dark">
+                    </a>
+                </td>
+                <td th:text="${order.orderItems[0].purchaseCategoryName}"></td>
+                <td>
+                    <img th:src="${(order.orderItems[0].product.imagePath == null or #strings.isEmpty(order.orderItems[0].product.imagePath))
+                                       ? '/images/placeholder.png'
+                                       : order.orderItems[0].product.imagePath}"
+                         alt="Product image" class="product-img">
+                </td>
+            </tr>
+            <tr th:each="item, iterStat : ${order.orderItems}" th:if="${iterStat.index > 0}">
+                <td>
+                    <a th:href="@{/orders/{orderId}/order-item/{productId}(orderId=${order.id}, productId=${item.product.id})}"
+                       th:text="${item.purchaseName} + ' (x' + ${item.quantity} + ')'"
+                       class="text-decoration-none text-dark">
+                    </a>
+                </td>
+                <td th:text="${item.purchaseCategoryName}"></td>
+                <td>
+                    <img th:src="${(item.product.imagePath == null or #strings.isEmpty(item.product.imagePath))
+                                       ? '/images/placeholder.png'
+                                       : item.product.imagePath}"
+                         alt="Product image" class="product-img">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

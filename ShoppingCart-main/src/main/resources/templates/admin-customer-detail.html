@@ -1,0 +1,170 @@
+
+<!--
+Author: Huang Jun, You Yihong
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin · Customer Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        body{
+            background:#f8f9fa;
+            font-family:'Segoe UI',sans-serif;
+        }
+        .info-box{
+            background:#fff;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            box-shadow:0 10px 24px rgba(15,23,42,0.1);
+            padding:24px;
+            margin-bottom:24px;
+        }
+        .section-title{
+            color:#333;
+            font-weight:600;
+        }
+        .table th{
+            background:#f1f1f1;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <h2 class="mb-1 section-title" th:text="'Customer #' + ${customerDetail.customer.customerId}">Customer Detail</h2>
+            <p class="text-muted mb-0" th:text="${customerDetail.customer.name}">Customer Name</p>
+        </div>
+        <a href="#" class="btn btn-outline-secondary" onclick="history.back(); return false;">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="info-box h-100">
+                <h4 class="mb-3 section-title">Profile</h4>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Name</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.name}">Name</dd>
+
+                    <dt class="col-sm-4">Username</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.username}">Username</dd>
+
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.emailAddress}">Email</dd>
+
+                    <dt class="col-sm-4">Phone</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.phoneNumber}">Phone</dd>
+
+                    <dt class="col-sm-4">Address</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.address}">Address</dd>
+
+                    <dt class="col-sm-4">Total Orders</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.orderCount}">0</dd>
+
+                    <dt class="col-sm-4">Cart ID</dt>
+                    <dd class="col-sm-8" th:text="${customerDetail.customer.cartId != null ? customerDetail.customer.cartId : 'N/A'}">Cart</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="info-box h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 section-title">Cart</h4>
+                    <span class="badge text-bg-secondary"
+                          th:text="${customerDetail.cart != null ? ('Items · ' + customerDetail.cart.itemCount) : 'No cart'}">
+                        Items · 0
+                    </span>
+                </div>
+
+                <div th:if="${customerDetail.cart == null or customerDetail.cart.cartId == null}"
+                     class="alert alert-light border mb-0">
+                    No cart found for this customer.
+                </div>
+
+                <div th:if="${customerDetail.cart != null and customerDetail.cart.cartId != null}">
+                    <p class="mb-3">
+                        <span class="fw-semibold">Cart #</span>
+                        <span th:text="${customerDetail.cart.cartId}">0</span>
+                        <span class="text-muted">·</span>
+                        <span class="fw-semibold">Total:</span>
+                        <span th:text="'$ '+ ${#numbers.formatDecimal(customerDetail.cart.totalAmount, 1, 2)}">0</span>
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm align-middle text-center mb-0">
+                            <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Line Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${customerDetail.cart.items}">
+                                <td th:text="${item.productName}">Product</td>
+                                <td th:text="'$ '+ ${#numbers.formatDecimal(item.unitPrice, 1, 2)}">0</td>
+                                <td th:text="${item.quantity}">0</td>
+                                <td th:text="'$ '+ ${#numbers.formatDecimal(item.lineTotal, 1, 2)}">0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0 section-title">Orders</h4>
+        </div>
+
+        <div th:if="${customerDetail.orders == null or #lists.isEmpty(customerDetail.orders)}"
+             class="alert alert-light border mb-0">
+            No orders yet.
+        </div>
+
+        <div th:if="${customerDetail.orders != null and !#lists.isEmpty(customerDetail.orders)}" class="table-responsive">
+            <table class="table table-bordered align-middle text-center mb-0">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Order Date</th>
+                    <th>Items</th>
+                    <th>Total Amount</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${customerDetail.orders}">
+                    <td th:text="${order.orderId}">1</td>
+                    <td th:text="${order.orderDate}">2025-01-01</td>
+                    <td th:text="${order.itemCount}">0</td>
+                    <td th:text="'$ '+ ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">0</td>
+                    <td>
+                        <a th:href="@{'/admin/orders/' + ${order.orderId}}"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-receipt-cutoff"></i> View Order
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

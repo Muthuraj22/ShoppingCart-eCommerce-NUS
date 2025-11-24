@@ -1,0 +1,181 @@
+
+<!--
+Author: Huang Jun, You Yihong
+-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Maintain Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <style>
+        body{
+            background:#f8f9fa;
+            font-family:'Segoe UI',sans-serif;
+        }
+        .search-section {
+            width: 80%;
+            max-width: 800px;
+            margin: 2rem auto 1rem;
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+            border:1px solid #e5e7eb;
+        }
+        .table th {
+            background-color: #f1f1f1;
+        }
+        .product-img {
+            width: 80px;
+            height: auto;
+            border-radius: 6px;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-top: 2rem;
+            color: #333;
+        }
+        .card-box{
+            background:#fff;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            box-shadow:0 10px 24px rgba(15,23,42,0.1);
+            padding:24px;
+            margin-bottom:24px;
+        }
+    </style>
+    <script>
+        function toggleInput() {
+            let searchType = document.getElementById("search_category").value;
+            let keywordInput = document.getElementById("keywordInput");
+            let categoryDropdown = document.getElementById("categoryDropdown");
+            let textField = keywordInput.querySelector("input");
+            let categoryField = categoryDropdown.querySelector("select");
+
+            if (searchType === "name") {
+                keywordInput.style.display = "block";
+                textField.disabled = false;
+                categoryDropdown.style.display = "none";
+                categoryField.disabled = true;
+            } else {
+                keywordInput.style.display = "none";
+                textField.disabled = true;
+                categoryDropdown.style.display = "block";
+                categoryField.disabled = false;
+            }
+        }
+        window.onload = toggleInput;
+    </script>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<h2>Maintain Products</h2>
+
+<form th:action="@{/products/admin/searching}" method="GET" class="search-section">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label for="search_category" class="form-label fw-semibold">Search By</label>
+            <select name="search_category" id="search_category" class="form-select" onchange="toggleInput()">
+                <option value="name">Name</option>
+                <option value="category">Category</option>
+            </select>
+        </div>
+
+        <div class="col-md-5">
+            <label class="form-label fw-semibold">Enter keyword</label>
+
+            <div id="keywordInput">
+                <input type="text" name="keyword" class="form-control" placeholder="Enter name..." />
+            </div>
+
+            <div id="categoryDropdown" style="display:none;">
+                <select name="keyword" class="form-select">
+                    <option th:each="cat : ${categories}"
+                            th:value="${cat.name}"
+                            th:text="${cat.name}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                <button type="button"
+                        class="btn btn-outline-secondary flex-grow-1"
+                        onclick="window.location.href='/products/admin/maintain';">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="col-12 d-flex flex-wrap justify-content-end gap-2 mt-2">
+            <a th:href="@{/category/admin/maintain}" class="btn btn-outline-secondary">
+                <i class="bi bi-tags"></i> Manage Categories
+            </a>
+            <a th:href="@{/products/admin/add}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Product
+            </a>
+        </div>
+    </div>
+</form>
+
+<h2>Product List</h2>
+<h3 th:if="${#lists.isEmpty(products)}">No Results.</h3>
+
+<div class="container mt-4" th:if="${not #lists.isEmpty(products)}">
+    <div class="table-responsive card-box p-0">
+        <table class="table table-bordered align-middle text-center mb-0">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Unit Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}">Id</td>
+                <td>
+                    <img th:src="${(product.imagePath == null or #strings.isEmpty(product.imagePath))
+                                   ? '/images/placeholder.png'
+                                   : product.imagePath}"
+                         alt="Product image"
+                         class="product-img">
+                </td>
+                <td><a th:text="${product.name}">Name</a></td>
+                <td th:text="'$ '+ ${#numbers.formatDecimal(product.unitPrice, 1, 2)}">Unit Price</td>
+                <td th:text="${product.stockQty}">Stock</td>
+                <td th:text="${product.category.name}">Category</td>
+                <td th:text="${product.description}">Description</td>
+                <td>
+                    <a th:href="@{/products/admin/edit/{id}(id=${product.id})}"
+                       class="btn btn-outline-primary btn-sm me-2">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+                    <a th:href="@{/products/admin/deletion/{id}(id=${product.id})}"
+                       class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
